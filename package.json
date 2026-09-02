@@ -2,9 +2,19 @@
   "name": "frontdeskapp",
   "version": "0.1.0",
   "private": true,
+  "allowScripts": {
+    "@prisma/client@6.11.1": true,
+    "@prisma/engines@6.11.1": true,
+    "@tailwindcss/oxide@4.1.11": true,
+    "bcrypt@6.0.0": true,
+    "prisma@6.11.1": true,
+    "sharp@0.34.2": true,
+    "unrs-resolver@1.11.0": true
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint"
   },
