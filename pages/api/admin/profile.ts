@@ -55,7 +55,7 @@ export default async function handler(
     });
 
     return res.status(200).json(updatedUser);
-  } catch (error) {
+  } catch {
     return res.status(500).json({ message: "Internal server error" });
   }
 }

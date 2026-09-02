@@ -21,7 +21,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const zonedNow = toZonedTime(now, timeZone);
       // Atur waktu ke awal hari (00:00:00) di zona waktu tersebut
       const startOfDay = fromZonedTime(format(zonedNow, 'yyyy-MM-dd 00:00:00', { timeZone }), timeZone);
-      const endOfDay = fromZonedTime(format(zonedNow, 'yyyy-MM-dd 23:59:59', { timeZone }), timeZone);
       const deletedResult = await prisma.complaint.deleteMany({
         where: {
           createdAt: {

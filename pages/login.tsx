@@ -28,7 +28,7 @@ export default function LoginPage() {
       } else {
         setError("Email atau password tidak valid. Silakan coba lagi.");
       }
-    } catch (err) {
+    } catch {
       setError("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setIsLoading(false);

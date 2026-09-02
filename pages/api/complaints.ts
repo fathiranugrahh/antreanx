@@ -1,9 +1,9 @@
 import { subDays, startOfDay } from 'date-fns';
-import { toZonedTime, fromZonedTime, format } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./auth/[...nextauth]";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === "GET") {
     const { filter } = req.query;
     
-    let where: Prisma.ComplaintWhereInput = {};
+    const where: { createdAt?: { gte: Date } } = {};
 
     if (typeof filter === 'string' && filter !== 'all') {
       const now = new Date();
@@ -108,7 +108,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { id, status, notes, name, company, phone, complaint, category, deviceType, noInternet } = req.body;
 
     // Prepare data object - only include fields that are provided
-    const updateData: any = {};
+    const updateData: Partial<{
+      status: string;
+      notes: string | null;
+      name: string;
+      company: string;
+      phone: string;
+      complaint: string;
+      category: string | null;
+      deviceType: string | null;
+      noInternet: string | null;
+    }> = {};
     if (status !== undefined) updateData.status = status;
     if (notes !== undefined) updateData.notes = notes;
     if (name !== undefined) updateData.name = name;

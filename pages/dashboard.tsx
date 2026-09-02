@@ -334,7 +334,7 @@ const exportToCSV = () => {
   }
   
   // Function to properly escape CSV values
-  const escapeCsvValue = (value: any) => {
+  const escapeCsvValue = (value: unknown) => {
     if (value === null || value === undefined) return "-";
     const stringValue = String(value);
     
