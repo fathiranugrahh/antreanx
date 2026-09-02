@@ -1,333 +1,266 @@
-"use client";
-import { useState } from "react";
+import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
+import {
+  ArrowRightIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  DocumentTextIcon,
+  QueueListIcon,
+  ShieldCheckIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 
-export default function Home() {
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    complaint: "",
-    category: "",
-    noInternet: "",
-  });
-  const [modalData, setModalData] = useState<any>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const steps = [
+  {
+    number: "01",
+    title: "Isi detail pengaduan",
+    description: "Ceritakan kendala dan lengkapi informasi pelanggan melalui formulir singkat.",
+    icon: DocumentTextIcon,
+  },
+  {
+    number: "02",
+    title: "Dapatkan nomor antrean",
+    description: "Nomor antrean dan estimasi waktu tunggu akan langsung ditampilkan.",
+    icon: QueueListIcon,
+  },
+  {
+    number: "03",
+    title: "Keluhan ditindaklanjuti",
+    description: "Tim front desk memproses laporan secara teratur sesuai antrean yang aktif.",
+    icon: CheckCircleIcon,
+  },
+];
 
-  const handleChange = (e: any) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const res = await fetch("/api/complaints", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, company: "", deviceType: "" }),
-      });
-      const result = await res.json();
-
-      const estimasiMenit = await fetch("/api/complaints")
-        .then((res) => res.json())
-        .then((data) => {
-          const antreanAktif = data.filter(
-            (c: any) => c.status === "Menunggu" || c.status === "Diproses"
-          );
-          return antreanAktif.length * 7;
-        });
-
-      setModalData({
-        queueNumber: result.queueNumber,
-        name: result.name,
-        category: result.category,
-        time: new Date(result.createdAt).toLocaleTimeString("id-ID"),
-        estimasi: estimasiMenit,
-      });
-
-      setForm({
-        name: "",
-        phone: "",
-        complaint: "",
-        category: "",
-        noInternet: "",
-      });
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50/30 to-slate-100">
-      {/* Advanced Navbar */}
-      <nav className="bg-white/95 backdrop-blur-md shadow-xl border-b border-red-100">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <div className="h-10 w-10 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center shadow-lg">
-                <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-                  Front Desk Indibiz
-                </h1>
-                <p className="text-xs text-gray-500 -mt-1">PT Telkom Indonesia</p>
-              </div>
-            </div>
+    <>
+      <Head>
+        <title>AntreanX — Layanan Pengaduan IndiBiz</title>
+        <meta
+          name="description"
+          content="Sampaikan pengaduan layanan IndiBiz dengan mudah dan dapatkan nomor antrean secara langsung."
+        />
+      </Head>
+
+      <div className="min-h-screen overflow-hidden bg-[#f8f8f7] text-[#181817]">
+        <header className="relative z-20 border-b border-black/[0.07] bg-[#f8f8f7]/90 backdrop-blur-xl">
+          <nav
+            className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10"
+            aria-label="Navigasi utama"
+          >
             <Link
-              href="/login"
-              className="group flex items-center gap-3 px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              href="/"
+              className="landing-press flex items-center gap-3 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-4"
+              aria-label="AntreanX, kembali ke beranda"
             >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <span className="text-sm font-medium">Admin Portal</span>
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-black/[0.08] bg-white shadow-sm">
+                <Image src="/Indibiz.png" alt="" width={31} height={31} priority />
+              </span>
+              <span>
+                <span className="block text-[15px] font-bold leading-none tracking-[-0.02em]">AntreanX</span>
+                <span className="mt-1 block text-[11px] font-medium leading-none text-neutral-500">Front Desk IndiBiz</span>
+              </span>
             </Link>
-          </div>
-        </div>
-      </nav>
 
-      {/* Main Content */}
-      <main className="max-w-2xl mx-auto px-6 py-12">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-600 to-red-700 rounded-2xl shadow-2xl mb-6">
-            <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            Layanan Pengaduan Pelanggan
-          </h2>
-          <p className="text-gray-600 max-w-md mx-auto">
-            Sampaikan keluhan Anda dengan mudah dan dapatkan solusi terbaik dari tim profesional kami
-          </p>
-        </div>
-
-        {/* Form Container */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 space-y-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Personal Information Section */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 pb-2 border-b border-red-100">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                  <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">Informasi Pribadi</h3>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Nama Lengkap <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Masukkan nama lengkap"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Nomor Telepon <span className="text-red-500">*</span>
-                </label>
-                <input
-                  name="phone"
-                  value={form.phone}
-                  onChange={handleChange}
-                  placeholder="Contoh: 08123456789"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Service Information Section */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 pb-2 border-b border-red-100">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                  <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">Informasi Layanan</h3>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Kategori Keluhan <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="category"
-                  value={form.category}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                  required
-                >
-                  <option value="">Pilih kategori keluhan</option>
-                  <option value="Gangguan Internet">🌐 Gangguan Layanan</option>
-                  <option value="Layanan Tambahan">➕ Penambahan Layanan</option>
-                  <option value="Lain-lain">❓ Lain-lain</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Nomor Internet / Pelanggan
-                </label>
-                <input
-                  name="noInternet"
-                  value={form.noInternet}
-                  onChange={handleChange}
-                  placeholder="Masukkan nomor internet atau pelanggan"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                />
-              </div>
-            </div>
-
-            {/* Complaint Details Section */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 pb-2 border-b border-red-100">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                  <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">Detail Keluhan</h3>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Deskripsi Keluhan <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  name="complaint"
-                  value={form.complaint}
-                  onChange={handleChange}
-                  placeholder="Jelaskan keluhan Anda secara detail untuk membantu kami memberikan solusi yang tepat..."
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm resize-none"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="pt-6">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Link
+                href="/login"
+                className="landing-press hidden rounded-full px-4 py-2.5 text-sm font-semibold text-neutral-600 transition-colors duration-150 hover:bg-black/[0.04] hover:text-neutral-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 sm:inline-flex"
               >
-                {isSubmitting ? (
-                  <div className="flex items-center justify-center gap-3">
-                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Mengirim Pengaduan...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center gap-3">
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                    <span>Kirim Pengaduan</span>
-                  </div>
-                )}
-              </button>
+                Portal admin
+              </Link>
+              <Link
+                href="/pengaduan"
+                className="landing-press inline-flex items-center gap-2 rounded-full bg-[#1b1b1a] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-black focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-4 sm:px-5"
+              >
+                Buat pengaduan
+                <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
+              </Link>
             </div>
-          </form>
-        </div>
+          </nav>
+        </header>
 
-        {/* Footer Info */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-2 text-sm text-gray-600 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full">
-            <svg className="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>Layanan 24/7 • Respon Cepat • Solusi Terpercaya</span>
-          </div>
-        </div>
-      </main>
+        <main>
+          <section className="relative">
+            <div className="pointer-events-none absolute left-1/2 top-0 h-[540px] w-[900px] -translate-x-1/2 rounded-full bg-red-500/[0.06] blur-[120px]" />
+            <div className="relative mx-auto grid max-w-7xl gap-14 px-5 pb-20 pt-4 sm:px-8 sm:pt-8 lg:grid-cols-[1.03fr_0.97fr] lg:items-center lg:gap-16 lg:px-10 lg:pb-28 lg:pt-12">
+              <div className="max-w-2xl">
+                <h1 className="landing-reveal landing-delay-1 max-w-[680px] text-[44px] font-semibold leading-[1.05] tracking-[-0.055em] text-[#171716] sm:text-6xl lg:text-[68px]">
+                  Keluhan tercatat.
+                  <span className="block text-neutral-400">Penanganan lebih terarah.</span>
+                </h1>
 
-      {/* Advanced Modal */}
-      {modalData && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all duration-300 scale-100">
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-green-600 to-green-700 p-6 text-white text-center">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold mb-2">Pengaduan Terkirim!</h2>
-              <p className="text-green-100">
-                Terima kasih <strong>{modalData.name}</strong>
-              </p>
-            </div>
+                <p className="landing-reveal landing-delay-2 mt-7 max-w-xl text-base leading-7 text-neutral-600 sm:text-lg sm:leading-8">
+                  Sampaikan kendala layanan tanpa proses yang rumit. AntreanX membantu setiap laporan masuk ke antrean yang jelas agar tim kami dapat melayani Anda dengan lebih baik.
+                </p>
 
-            {/* Modal Content */}
-            <div className="p-6 space-y-4">
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-600">Nomor Antrian</span>
-                  <span className="text-2xl font-bold text-red-600">{modalData.queueNumber}</span>
+                <div className="landing-reveal landing-delay-3 mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Link
+                    href="/pengaduan"
+                    className="landing-press group inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#e5282f] px-8 text-base font-bold text-white shadow-[0_10px_30px_rgba(229,40,47,0.2)] transition-[background-color,box-shadow] duration-200 hover:bg-[#cf2027] hover:shadow-[0_12px_34px_rgba(229,40,47,0.28)] focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-4"
+                  >
+                    Mulai pengaduan
+                    <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
+                  </Link>
+                  <a
+                    href="#cara-kerja"
+                    className="landing-press inline-flex min-h-14 items-center justify-center rounded-full border border-black/10 bg-white px-8 text-base font-bold text-neutral-700 shadow-sm transition-[background-color,border-color] duration-200 hover:border-black/20 hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                  >
+                    Lihat cara kerja
+                  </a>
                 </div>
-                <div className="h-px bg-gray-200"></div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Kategori:</span>
-                    <span className="font-medium text-gray-900">{modalData.category}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Waktu Pengajuan:</span>
-                    <span className="font-medium text-gray-900">{modalData.time}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Estimasi Tunggu:</span>
-                    <span className="font-medium text-orange-600">{modalData.estimasi} Menit</span>
-                  </div>
+
+                <div className="landing-reveal landing-delay-4 mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium text-neutral-500">
+                  <span className="flex items-center gap-2">
+                    <CheckCircleIcon className="h-4 w-4 text-red-500" aria-hidden="true" />
+                    Formulir ringkas
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <CheckCircleIcon className="h-4 w-4 text-red-500" aria-hidden="true" />
+                    Nomor antrean otomatis
+                  </span>
                 </div>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                <div className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
+              <div className="landing-reveal landing-delay-3 relative mx-auto w-full max-w-[530px] lg:mx-0 lg:justify-self-end">
+                <div className="absolute -inset-6 rounded-[44px] bg-gradient-to-br from-red-100/70 via-white/20 to-neutral-200/60 blur-2xl" />
+                <div className="relative rounded-[30px] border border-black/[0.08] bg-white p-3 shadow-[0_32px_80px_rgba(28,25,23,0.13)] sm:p-4">
+                  <div className="overflow-hidden rounded-[22px] border border-black/[0.07] bg-[#f5f5f3]">
+                    <div className="flex items-center justify-between border-b border-black/[0.07] bg-white px-5 py-4">
+                      <div className="flex items-center gap-2.5">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50">
+                          <QueueListIcon className="h-[18px] w-[18px] text-red-600" aria-hidden="true" />
+                        </span>
+                        <div>
+                          <p className="text-xs font-bold text-neutral-900">Status antrean</p>
+                          <p className="mt-0.5 text-[10px] font-medium text-neutral-400">Diperbarui otomatis</p>
+                        </div>
+                      </div>
+                      <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-700">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                        Aktif
+                      </span>
+                    </div>
+
+                    <div className="p-5 sm:p-7">
+                      <div className="rounded-2xl bg-[#1d1d1c] p-5 text-white shadow-lg shadow-black/10 sm:p-6">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">Nomor antrean Anda</p>
+                            <p className="mt-2 text-5xl font-semibold tracking-[-0.05em] sm:text-6xl">A012</p>
+                          </div>
+                          <span className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white/75">Menunggu</span>
+                        </div>
+                        <div className="mt-7 flex items-center gap-2 border-t border-white/10 pt-4 text-xs font-medium text-white/60">
+                          <ClockIcon className="h-4 w-4 text-red-400" aria-hidden="true" />
+                          Estimasi pelayanan sekitar <strong className="font-semibold text-white">14 menit</strong>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-3">
+                        <div className="rounded-2xl border border-black/[0.06] bg-white p-4">
+                          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50">
+                            <UserIcon className="h-4 w-4 text-red-600" aria-hidden="true" />
+                          </span>
+                          <p className="mt-4 text-[11px] font-medium text-neutral-400">Antrean aktif</p>
+                          <p className="mt-0.5 text-xl font-bold tracking-tight text-neutral-900">2 pelanggan</p>
+                        </div>
+                        <div className="rounded-2xl border border-black/[0.06] bg-white p-4">
+                          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
+                            <ShieldCheckIcon className="h-4 w-4 text-emerald-600" aria-hidden="true" />
+                          </span>
+                          <p className="mt-4 text-[11px] font-medium text-neutral-400">Laporan Anda</p>
+                          <p className="mt-0.5 text-xl font-bold tracking-tight text-neutral-900">Tersimpan</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="landing-float absolute -bottom-5 -left-3 hidden items-center gap-3 rounded-2xl border border-black/[0.08] bg-white px-4 py-3 shadow-[0_16px_40px_rgba(28,25,23,0.13)] sm:flex lg:-left-10">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50">
+                    <CheckCircleIcon className="h-5 w-5 text-emerald-600" aria-hidden="true" />
+                  </span>
                   <div>
-                    <p className="text-sm font-medium text-blue-900">Informasi Penting</p>
-                    <p className="text-sm text-blue-700 mt-1">
-                      Simpan nomor antrian Anda. Tim kami akan segera memproses pengaduan Anda.
-                    </p>
+                    <p className="text-xs font-bold text-neutral-900">Laporan berhasil dikirim</p>
+                    <p className="mt-0.5 text-[10px] font-medium text-neutral-400">Nomor antrean telah dibuat</p>
                   </div>
                 </div>
               </div>
-
-              <button
-                onClick={() => setModalData(null)}
-                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
-              >
-                Tutup
-              </button>
             </div>
+          </section>
+
+          <section id="cara-kerja" className="border-y border-black/[0.07] bg-white scroll-mt-20">
+            <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-24 lg:px-10">
+              <div className="grid gap-8 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-red-600">Cara kerja</p>
+                  <h2 className="mt-4 max-w-sm text-3xl font-semibold leading-tight tracking-[-0.04em] text-neutral-900 sm:text-4xl">
+                    Tiga langkah menuju penanganan yang jelas.
+                  </h2>
+                  <p className="mt-5 max-w-sm text-sm leading-6 text-neutral-500">
+                    Dibuat sederhana agar Anda bisa fokus menjelaskan kendala, sementara sistem mengatur antreannya.
+                  </p>
+                </div>
+
+                <div className="grid gap-px overflow-hidden rounded-3xl border border-black/[0.07] bg-black/[0.07] md:grid-cols-3">
+                  {steps.map((step) => {
+                    const Icon = step.icon;
+                    return (
+                      <article key={step.number} className="group bg-[#fafaf9] p-6 sm:p-7">
+                        <div className="flex items-center justify-between">
+                          <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-black/[0.07] bg-white shadow-sm transition-transform duration-200 group-hover:-translate-y-0.5">
+                            <Icon className="h-5 w-5 text-red-600" aria-hidden="true" />
+                          </span>
+                          <span className="text-xs font-bold tracking-[0.12em] text-neutral-300">{step.number}</span>
+                        </div>
+                        <h3 className="mt-8 text-base font-bold tracking-[-0.02em] text-neutral-900">{step.title}</h3>
+                        <p className="mt-3 text-sm leading-6 text-neutral-500">{step.description}</p>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="bg-[#f8f8f7]">
+            <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-24 lg:px-10">
+              <div className="relative overflow-hidden rounded-[30px] bg-[#1d1d1c] px-6 py-12 text-center text-white sm:px-12 sm:py-16">
+                <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full border-[60px] border-red-500/10" />
+                <div className="pointer-events-none absolute -bottom-40 -left-20 h-72 w-72 rounded-full bg-red-500/10 blur-3xl" />
+                <div className="relative mx-auto max-w-2xl">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-red-400">Kami siap membantu</p>
+                  <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">Ada kendala dengan layanan Anda?</h2>
+                  <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-white/55 sm:text-base">
+                    Mulai pengaduan sekarang. Informasi yang jelas membantu tim kami memberikan tindak lanjut yang lebih tepat.
+                  </p>
+                  <Link
+                    href="/pengaduan"
+                    className="landing-press group mt-8 inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full bg-white px-6 text-sm font-bold text-neutral-900 transition-colors duration-200 hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-4 focus-visible:ring-offset-neutral-900"
+                  >
+                    Buat pengaduan
+                    <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <footer className="border-t border-black/[0.07] bg-white">
+          <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-8 text-sm text-neutral-500 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
+            <div className="flex items-center gap-2.5">
+              <Image src="/Indibiz.png" alt="IndiBiz" width={24} height={24} />
+              <span className="font-semibold text-neutral-700">AntreanX</span>
+              <span className="text-neutral-300">•</span>
+              <span>Front Desk Platform</span>
+            </div>
+            <p>PT Telkom Indonesia · IndiBiz Sulbagsel</p>
           </div>
-        </div>
-      )}
-    </div>
+        </footer>
+      </div>
+    </>
   );
 }
